@@ -31,6 +31,7 @@ const items = [
 export function AppSidebar() {
   const pathname = usePathname();
   console.log(pathname, "starts with");
+  const isHome = pathname === "/";
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -48,12 +49,13 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={item.url.startsWith(pathname)}
+                    isActive={item.url.startsWith(pathname) && !isHome}
                   >
                     <Link
                       href={item.url}
                       className={cn({
-                        "text-blue-500": item.url.startsWith(pathname),
+                        "text-blue-500":
+                          item.url.startsWith(pathname) && !isHome,
                       })}
                     >
                       <item.icon />
