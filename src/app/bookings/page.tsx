@@ -1,40 +1,4 @@
 "use client";
-import { create } from "zustand";
-import { nanoid } from "nanoid";
-
-type State = {
-  bookings: Booking[];
-};
-type Actions = {
-  addBooking: (booking: Omit<Booking, "id">) => void;
-};
-
-type Store = State & Actions;
-
-export const useBookingsStore = create<Store>((set) => ({
-  bookings: [
-    {
-      id: nanoid(),
-      budget: 5000,
-      checkIn: new Date(),
-      checkOut: new Date(),
-      clientId: nanoid(),
-      roomCount: 5,
-      roomType: "suite",
-      specialRequests: "",
-      venue: {
-        address: "21 Oak Terrace",
-        latitude: 5,
-        longitude: 5,
-      },
-    },
-  ],
-  addBooking: (booking) => {
-    set((state) => {
-      return { bookings: [{ id: nanoid(), ...booking }, ...state.bookings] };
-    });
-  },
-}));
 
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -43,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useBookingsStore } from "@/stores/bookings";
 
 export default function Page() {
   const { bookings } = useBookingsStore();

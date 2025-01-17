@@ -1,31 +1,4 @@
 "use client";
-import { create } from "zustand";
-import { nanoid } from "nanoid";
-
-type State = {
-  clients: Client[];
-};
-type Actions = {
-  addClient: (client: Omit<Client, "id">) => void;
-};
-
-type Store = State & Actions;
-
-export const useClientsStore = create<Store>((set) => ({
-  clients: [
-    {
-      id: nanoid(),
-      name: "Mitchell",
-      email: "mitchell@vasile.live",
-      phone: "5555555555",
-    },
-  ],
-  addClient: (client) => {
-    set((state) => {
-      return { clients: [{ id: nanoid(), ...client }, ...state.clients] };
-    });
-  },
-}));
 
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
@@ -34,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Client, useClientsStore } from "@/stores/clients";
 
 export default function Page() {
   const { clients } = useClientsStore();
@@ -61,13 +35,6 @@ export default function Page() {
     </div>
   );
 }
-
-type Client = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-};
 
 const columns: ColumnDef<Client>[] = [
   { accessorKey: "id", header: "id" },

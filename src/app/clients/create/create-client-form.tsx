@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { useClientsStore } from "../page";
 import { useRouter } from "next/navigation";
+import { useClientsStore } from "@/stores/clients";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -74,12 +74,13 @@ export function CreateClientForm() {
 
       <form.Subscribe
         selector={(state) => [state.canSubmit, state.isSubmitting]}
-        children={([canSubmit, isSubmitting]) => (
+      >
+        {([canSubmit, isSubmitting]) => (
           <Button type="submit" disabled={!canSubmit}>
             {isSubmitting ? "..." : "Submit"}
           </Button>
         )}
-      />
+      </form.Subscribe>
     </form>
   );
 }

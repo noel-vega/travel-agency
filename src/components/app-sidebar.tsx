@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { HomeIcon, HotelIcon, UsersIcon } from "lucide-react";
+import { HotelIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 
 // Menu items.

@@ -1,12 +1,9 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent, ComponentProps } from "react";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { useDebounceValue } from "usehooks-ts";
 import type { Place, PlacesResponse } from "@/types/places";
-
-type InputProps = ComponentProps<"input"> & {};
 
 interface PlacesAutocompleteProps {
   onPlaceSelect?: (place: Place) => void;
