@@ -45,12 +45,22 @@ export interface RegularOpeningHours {
 }
 
 export type PriceLevel =
-  | 'PRICE_LEVEL_FREE'
-  | 'PRICE_LEVEL_INEXPENSIVE'
-  | 'PRICE_LEVEL_MODERATE'
-  | 'PRICE_LEVEL_EXPENSIVE'
-  | 'PRICE_LEVEL_VERY_EXPENSIVE'
-  | 'PRICE_LEVEL_UNSPECIFIED';
+  | "PRICE_LEVEL_FREE"
+  | "PRICE_LEVEL_INEXPENSIVE"
+  | "PRICE_LEVEL_MODERATE"
+  | "PRICE_LEVEL_EXPENSIVE"
+  | "PRICE_LEVEL_VERY_EXPENSIVE"
+  | "PRICE_LEVEL_UNSPECIFIED";
+
+interface Photo {
+  name: string;
+  widthPx?: number;
+  heightPx?: number;
+  googleMapsUri: string;
+  authorAttributions: {
+    photoUri: string;
+  }[];
+}
 
 export interface Hotel {
   id: string;
@@ -61,6 +71,7 @@ export interface Hotel {
   priceLevel?: PriceLevel;
   websiteUri?: string;
   regularOpeningHours?: RegularOpeningHours;
+  photos?: Photo[];
   // Optional: Add these if you need them
   // googleMapsUri?: string;
   // internationalPhoneNumber?: string;

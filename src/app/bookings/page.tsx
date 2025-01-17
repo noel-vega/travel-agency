@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useBookingsStore } from "@/stores/bookings";
+import {
+  Booking,
+  bookingStatusConfig,
+  useBookingsStore,
+} from "@/stores/bookings";
+import { Badge } from "@/components/ui/badge";
 
 export default function Page() {
   const { bookings } = useBookingsStore();
@@ -36,24 +41,17 @@ export default function Page() {
   );
 }
 
-type Booking = {
-  id: string;
-  clientId: string;
-  venue: {
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
-  checkIn: Date;
-  checkOut: Date;
-  roomType: "single" | "double" | "suite";
-  roomCount: number;
-  budget: number;
-  specialRequests: string;
-};
-
 const columns: ColumnDef<Booking>[] = [
   { accessorKey: "id", header: "ID" },
+
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const config = bookingStatusConfig[row.original.status];
+      return <Badge variant={config.variant}>{config.label}</Badge>;
+    },
+  },
   {
     accessorKey: "venue",
     header: "Venue",

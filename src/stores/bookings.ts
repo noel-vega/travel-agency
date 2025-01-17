@@ -2,7 +2,19 @@
 import { create } from "zustand";
 import { nanoid } from "nanoid";
 
-type Booking = {
+// types/booking.ts
+
+export const BookingStatus = {
+  INQUIRY: "INQUIRY",
+  PENDING_APPROVAL: "PENDING_APPROVAL",
+  CONFIRMED: "CONFIRMED",
+  COMPLETED: "COMPLETED",
+  CANCELLED: "CANCELLED",
+} as const;
+
+export type BookingStatusType = keyof typeof BookingStatus;
+
+export type Booking = {
   id: string;
   clientId: string;
   venue: {
@@ -16,6 +28,40 @@ type Booking = {
   roomCount: number;
   budget: number;
   specialRequests: string;
+  status: BookingStatusType;
+};
+
+type StatusConfig = {
+  label: string;
+  variant:
+    | "inquiry"
+    | "pendingApproval"
+    | "confirmed"
+    | "completed"
+    | "cancelled";
+};
+
+export const bookingStatusConfig: Record<BookingStatusType, StatusConfig> = {
+  INQUIRY: {
+    label: "Inquiry",
+    variant: "inquiry",
+  },
+  PENDING_APPROVAL: {
+    label: "Pending Approval",
+    variant: "pendingApproval",
+  },
+  CONFIRMED: {
+    label: "Confirmed",
+    variant: "confirmed",
+  },
+  COMPLETED: {
+    label: "Completed",
+    variant: "completed",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    variant: "cancelled",
+  },
 };
 
 type State = {
@@ -23,7 +69,7 @@ type State = {
 };
 
 type Actions = {
-  addBooking: (booking: Omit<Booking, "id">) => void;
+  addBooking: (booking: Omit<Booking, "id" | "status">) => void;
 };
 
 type Store = State & Actions;
@@ -40,15 +86,21 @@ export const useBookingsStore = create<Store>((set) => ({
       roomType: "suite",
       specialRequests: "",
       venue: {
-        address: "21 Oak Terrace",
-        latitude: 5,
-        longitude: 5,
+        address: "600 Somerset Corporate Blvd, Bridgewater, NJ 08807, USA",
+        latitude: 40.588147899999996,
+        longitude: -74.6238943,
       },
+      status: BookingStatus.CONFIRMED,
     },
   ],
   addBooking: (booking) => {
     set((state) => {
-      return { bookings: [{ id: nanoid(), ...booking }, ...state.bookings] };
+      return {
+        bookings: [
+          { id: nanoid(), status: BookingStatus.INQUIRY, ...booking },
+          ...state.bookings,
+        ],
+      };
     });
   },
 }));

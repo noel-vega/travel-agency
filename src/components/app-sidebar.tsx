@@ -9,8 +9,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { HotelIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -27,6 +29,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+  console.log(pathname, "starts with");
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -42,8 +46,16 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.url.startsWith(pathname)}
+                  >
+                    <Link
+                      href={item.url}
+                      className={cn({
+                        "text-blue-500": item.url.startsWith(pathname),
+                      })}
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

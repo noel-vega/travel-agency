@@ -1,9 +1,11 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent, ComponentProps } from "react";
+import React, { useState, useEffect, ComponentProps, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { useDebounceValue } from "usehooks-ts";
+import { MapPinIcon } from "lucide-react";
+import { useDebounceValue, useOnClickOutside } from "usehooks-ts";
 import type { Place, PlacesResponse } from "@/types/places";
+
+import { Card } from "./ui/card";
 
 interface PlacesAutocompleteProps {
   onPlaceSelect?: (place: Place) => void;
@@ -20,15 +22,37 @@ export default function PlacesAutocomplete({
   ...props
 }: Omit<ComponentProps<"input">, "onChange"> & PlacesAutocompleteProps) {
   const [input, setInput] = useState<string>("");
+  const [debouncedValue] = useDebounceValue(input, 750);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const ref = useRef(null);
+  const [showResults, setShowResults] = useState(false);
+  const isFromSelection = useRef(false);
 
-  const [debouncedInput] = useDebounceValue(input, 300);
+  const handleClickOutside = () => {
+    setShowResults(false);
+  };
+
+  // @ts-expect-error IDK
+  useOnClickOutside(ref, handleClickOutside);
 
   useEffect(() => {
-    const searchPlaces = async () => {
-      if (!debouncedInput.trim()) {
+    // Skip if the input change was from selection
+    if (isFromSelection.current) {
+      isFromSelection.current = false;
+      return;
+    }
+
+    if (!debouncedValue?.trim()) {
+      setPlaces([]);
+      setShowResults(false);
+      setLoading(false);
+      return;
+    }
+
+    const fetchPlaces = async () => {
+      if (!debouncedValue.trim()) {
         setPlaces([]);
         return;
       }
@@ -42,7 +66,7 @@ export default function PlacesAutocomplete({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ input: debouncedInput }),
+          body: JSON.stringify({ input: debouncedValue }),
         });
 
         if (!response.ok) {
@@ -52,24 +76,23 @@ export default function PlacesAutocomplete({
 
         const data = (await response.json()) as PlacesResponse;
         setPlaces(data.places || []);
+        setShowResults(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error fetching places");
-        console.error("Places API Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    searchPlaces();
-  }, [debouncedInput]);
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setInput(e.target.value);
-  };
+    fetchPlaces();
+  }, [debouncedValue]);
 
   const handlePlaceSelect = (place: Place): void => {
+    isFromSelection.current = true;
     setInput(place.formattedAddress);
     setPlaces([]);
+    setShowResults(false);
+    setLoading(false);
     onPlaceSelect?.(place);
     if (place) {
       onChange(place);
@@ -78,52 +101,65 @@ export default function PlacesAutocomplete({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative border">
         <Input
           type="text"
           value={input}
-          onChange={handleInputChange}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            // Only show loading if we're actually going to search
+            setInput(newValue);
+          }}
           aria-label="Search places"
           {...props}
         />
-        <Search
-          className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
-          aria-hidden="true"
-        />
+        {loading && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div
+              className="rounded-full border-2 border-t-blue-500 animate-spin h-5 w-5"
+              role="status"
+            ></div>
+          </div>
+        )}
       </div>
 
-      {loading && (
-        <div className="mt-2 text-sm text-gray-500" role="status">
-          Loading...
-        </div>
+      {showResults && (
+        <Card
+          className="absolute mt-2 max-w-lg w-full z-50 max-h-[300px] overflow-auto"
+          ref={ref}
+        >
+          <div className="p-2">
+            {places.length === 0 ? (
+              <p className="text-sm text-muted-foreground p-2">
+                No venues found.
+              </p>
+            ) : (
+              places.map((place) => (
+                <button
+                  key={place.id}
+                  onClick={() => handlePlaceSelect(place)}
+                  className="w-full text-left px-2 py-3 hover:bg-accent rounded-md flex items-center gap-2 focus:outline-none focus:bg-accent"
+                >
+                  <MapPinIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">
+                      {place.formattedAddress}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {place.displayName.text}
+                    </span>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </Card>
       )}
 
       {error && (
         <div className="mt-2 text-sm text-red-500" role="alert">
           {error}
         </div>
-      )}
-
-      {places.length > 0 && (
-        <ul
-          className="mt-2 absolute w-full bg-white shadow-lg rounded-lg overflow-hidden z-10"
-          role="listbox"
-        >
-          {places.map((place) => (
-            <li
-              key={place.id}
-              onClick={() => handlePlaceSelect(place)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              role="option"
-              aria-selected="false"
-            >
-              <div className="font-medium">{place.displayName.text}</div>
-              <div className="text-sm text-gray-500">
-                {place.formattedAddress}
-              </div>
-            </li>
-          ))}
-        </ul>
       )}
     </>
   );
