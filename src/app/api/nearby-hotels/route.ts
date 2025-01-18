@@ -1,4 +1,5 @@
 // app/api/nearby-hotels/route.ts
+import { HotelGoogleResponseSchema } from "@/types/hotels";
 import { NextRequest, NextResponse } from "next/server";
 
 interface NearbySearchRequest {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
             "places.priceLevel",
             "places.websiteUri",
             "places.regularOpeningHours",
-            // "places.photos",
+            "places.photos",
             "places.priceLevel",
             "places.nationalPhoneNumber",
             "places.regularOpeningHours",
@@ -67,12 +68,37 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await res.json();
+    console.log("places response: ", data);
+    const hotels = HotelGoogleResponseSchema.transform((x) => ({
+      ...x,
+      photos: x.photos.map((p) => ({
+        url: `https://places.googleapis.com/v1/${p.name}/media?key=${process.env.GOOGLE_MAPS_API_KEY}&maxHeightPx=128&maxWidthPx=208`,
+      })),
+    }))
+      .array()
+      .parse(data.places);
+
+    // hotels.map((hotel) => {
+    //   return {
+    //     ...hotel,
+    //     // photosUrls: hotel.
+    //   };
+    //   // `https://places.googleapis.com/v1/${photoReference}/media?key=${process.env.GOOGLE_MAPS_API_KEY}&maxHeightPx=400&maxWidthPx=400`;
+    // });
+
     // console.log("nearby hotels:", data.places[0]);
-    console.log("nearby hotels:", data.places);
-    // console.log("nearby hotels:", data.places[0].location);
-    // console.log("photos", data.places[0].photos);
-    // console.log("photos", data.places[0].photos[0].authorAttributions);
-    return NextResponse.json(data);
+    // console.log("nearby hotels:", data.places);
+    // HotelSchema.array().parse(data.places);
+    // data.places.map((place: any) => {
+    //   console.log("################################");
+    //   console.log("Hotel", place);
+    //   HotelSchema.parse(place);
+    //   console.log("################################\n");
+    // });
+    // data.places.forEach((place: any) => {
+    // console.log(place);
+    // });
+    return NextResponse.json(hotels);
   } catch (error) {
     console.error("Error fetching nearby hotels:", error);
     return NextResponse.json(

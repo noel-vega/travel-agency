@@ -11,6 +11,7 @@ import {
 import { Hotel } from "@/types/hotels";
 import { SquareArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Props = {
   hotel: Hotel;
@@ -21,9 +22,28 @@ export function HotelCard({ hotel, from, ...props }: Props) {
   return (
     <Card
       {...props}
-      className={cn("flex w-full border rounded-lg group", props.className)}
+      className={cn(
+        "flex w-full border rounded-lg group overflow-clip",
+        props.className
+      )}
     >
-      <Skeleton className="h-32 w-52 shrink-0" />
+      {hotel.photos.length > 0 ? (
+        <div className="h-32 w-52 shrink-0 relative border">
+          <div className="aspect-[13/8] h-full w-full relative">
+            <Image
+              src={hotel.photos[0].url}
+              alt={`Photo of ${hotel.displayName.text}`}
+              fill
+              priority
+              className="object-cover object-center"
+              style={{ position: "absolute", width: "100%", height: "100%" }}
+            />
+          </div>
+        </div>
+      ) : (
+        <Skeleton className="h-32 w-52 shrink-0" />
+      )}
+
       <div className="p-2 pl-4 space-y-2">
         <p className="font-semibold group-hover:underline">
           {hotel.displayName.text}

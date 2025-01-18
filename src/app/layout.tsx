@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-
 import "./globals.css";
+
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Layout } from "@/components/layout";
+import { QueryClientProvider } from "@/providers/query-client-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +26,9 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <Layout>{children}</Layout>
+          <QueryClientProvider>
+            <Layout>{children}</Layout>
+          </QueryClientProvider>
         </ThemeProvider>
       </body>
     </html>
