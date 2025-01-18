@@ -67,7 +67,9 @@ export interface Hotel {
   displayName: DisplayName;
   formattedAddress: string;
   location: Location;
-  rating?: number;
+  nationalPhoneNumber?: string;
+  rating: number;
+  userRatingCount: number;
   priceLevel?: PriceLevel;
   websiteUri?: string;
   regularOpeningHours?: RegularOpeningHours;

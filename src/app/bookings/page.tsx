@@ -7,19 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Booking,
-  bookingStatusConfig,
-  useBookingsStore,
-} from "@/stores/bookings";
+import { useBookingsStore } from "@/stores/bookings";
 import { Badge } from "@/components/ui/badge";
+import { Booking, bookingStatusConfig } from "@/types/bookings";
 
 export default function Page() {
   const { bookings } = useBookingsStore();
   const router = useRouter();
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-8">Bookings</h1>
+      <h1 className="text-3xl font-semibold mb-8">Booking Requests</h1>
       <div className="flex items-end mb-4">
         <div className="max-w-xs w-full">
           <Label htmlFor="search-clients">Search</Label>

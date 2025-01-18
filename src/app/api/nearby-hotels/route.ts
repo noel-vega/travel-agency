@@ -32,10 +32,15 @@ export async function POST(request: NextRequest) {
             "places.formattedAddress",
             "places.location",
             "places.rating",
+            "places.userRatingCount",
             "places.priceLevel",
             "places.websiteUri",
             "places.regularOpeningHours",
-            "places.photos",
+            // "places.photos",
+            "places.priceLevel",
+            "places.nationalPhoneNumber",
+            "places.regularOpeningHours",
+            // "places.hotelStarRating",
           ].join(","),
         },
         body: JSON.stringify({
@@ -49,7 +54,7 @@ export async function POST(request: NextRequest) {
             },
           },
           includedTypes: ["lodging", "hotel"],
-          maxResultCount: 20,
+          maxResultCount: 10,
           rankPreference: "DISTANCE",
         }),
       }
@@ -62,8 +67,9 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await res.json();
-    console.log("nearby hotels:", data.places[0]);
-    console.log("nearby hotels:", data.places[0].location);
+    // console.log("nearby hotels:", data.places[0]);
+    console.log("nearby hotels:", data.places);
+    // console.log("nearby hotels:", data.places[0].location);
     // console.log("photos", data.places[0].photos);
     // console.log("photos", data.places[0].photos[0].authorAttributions);
     return NextResponse.json(data);

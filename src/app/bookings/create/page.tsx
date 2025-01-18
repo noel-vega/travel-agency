@@ -6,15 +6,17 @@ import { CreateBookingForm } from "./create-booking-form";
 
 export default function Page() {
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-8">
-        <Button asChild variant="outline">
+    <div className="space-y-8">
+      <div className="flex gap-4 items-center">
+        <Button asChild variant="outline" size="sm">
           <Link href="/bookings">
             <MoveLeftIcon />
           </Link>
         </Button>
-        <h1 className="font-semibold text-3xl ">Create Booking</h1>
+        <p className="text-xs">Booking requests</p>
       </div>
+
+      <h1 className="font-semibold text-3xl ">Create Booking Request</h1>
       <div className="max-w-lg">
         <CreateBookingForm />
       </div>

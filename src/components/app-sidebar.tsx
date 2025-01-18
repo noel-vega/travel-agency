@@ -30,7 +30,6 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  console.log(pathname, "starts with");
   const isHome = pathname === "/";
   return (
     <Sidebar collapsible="icon">
